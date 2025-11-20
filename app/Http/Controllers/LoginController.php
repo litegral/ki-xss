@@ -51,13 +51,23 @@ class LoginController extends Controller
         }
 
         $data = $cr->filter('div[class="bio-info"] > div')->each(function ($result) {
-            return $result->text();
+            return trim($result->text());
         });
+
+        if (count($data) < 2) {
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors([
+                    'login' => 'Gagal mengambil data dari SIAM.'
+                ]);
+        }
 
         $user_data = [
             'nim' => $data[0],
             'name' => $data[1],
         ];
+
 
         $user = User::where('nim', $user_data['nim'])->first();
 
